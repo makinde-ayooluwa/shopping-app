@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const categories = [
-  { id: 1, name: "All", icon: "bi bi-grid" },
-  { id: 2, name: "Electronics", icon: "bi bi-laptop" },
-  { id: 3, name: "Fashion", icon: "bi bi-bag" },
-  { id: 4, name: "Home", icon: "bi bi-house-door" },
-  { id: 5, name: "Sports", icon: "bi bi-bicycle" },
-  { id: 6, name: "Beauty", icon: "bi bi-heart" },
+  { id: "all", name: "All", icon: "bi bi-grid", color: "#1e1b4b" },
+  { id: "electronics", name: "Electronics", icon: "bi bi-laptop", color: "#3b82f6" },
+  { id: "fashion", name: "Fashion", icon: "bi bi-bag", color: "#ec4899" },
+  { id: "home", name: "Home", icon: "bi bi-house-door", color: "#f59e0b" },
+  { id: "sports", name: "Sports", icon: "bi bi-bicycle", color: "#10b981" },
+  { id: "beauty", name: "Beauty", icon: "bi bi-heart", color: "#8b5cf6" },
 ];
 
 const products = [
@@ -83,6 +83,42 @@ const products = [
     image: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400&h=400&fit=crop",
     tag: "",
   },
+  {
+    id: 9,
+    name: "Leather Handbag",
+    price: 129.99,
+    rating: 4.7,
+    category: "Fashion",
+    image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+    tag: "New",
+  },
+  {
+    id: 10,
+    name: "Table Lamp",
+    price: 45.99,
+    rating: 4.3,
+    category: "Home",
+    image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=400&fit=crop",
+    tag: "",
+  },
+  {
+    id: 11,
+    name: "Basketball",
+    price: 24.99,
+    rating: 4.6,
+    category: "Sports",
+    image: "https://images.unsplash.com/photo-1519861531473-92002639313f?w=400&h=400&fit=crop",
+    tag: "",
+  },
+  {
+    id: 12,
+    name: "Lipstick Set",
+    price: 19.99,
+    rating: 4.5,
+    category: "Beauty",
+    image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&h=400&fit=crop",
+    tag: "Sale",
+  },
 ];
 
 function StarRating({ rating }) {
@@ -104,9 +140,14 @@ function StarRating({ rating }) {
   return <div className="star-rating">{stars}</div>;
 }
 
-export default function Home() {
+export default function Categories() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const getProductCount = (catName) => {
+    if (catName === "All") return products.length;
+    return products.filter((p) => p.category === catName).length;
+  };
 
   const filteredProducts = products.filter((p) => {
     const matchesCategory = activeCategory === "All" || p.category === activeCategory;
@@ -115,62 +156,66 @@ export default function Home() {
   });
 
   return (
-    <div className="home-page">
-      {/* Search Bar */}
+    <div className="categories-page">
+      {/* Header */}
+      <div className="categories-header">
+        <Link to="/" className="back-btn">
+          <i className="bi bi-arrow-left"></i>
+        </Link>
+        <h1 className="categories-title">Categories</h1>
+        <div className="header-spacer"></div>
+      </div>
+
+      {/* Search */}
       <div className="search-section">
         <div className="search-bar">
           <i className="bi bi-search search-icon"></i>
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder={`Search in ${activeCategory}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
 
-      {/* Hero Banner */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <h1 className="hero-title">Summer Collection</h1>
-          <p className="hero-subtitle">
-            Discover the hottest deals up to 50% off on selected items
-          </p>
-          <Link to="/categories" className="hero-btn">
-            Shop Now <i className="bi bi-arrow-right"></i>
-          </Link>
-        </div>
-        <div className="hero-badge">
-          <span className="hero-discount">-50%</span>
-          <span className="hero-off">OFF</span>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="categories-section">
-        <h2 className="section-title">Categories</h2>
-        <div className="categories-scroll">
+      {/* Category Cards */}
+      <section className="category-cards-section">
+        <div className="category-cards-grid">
           {categories.map((cat) => (
             <button
               key={cat.id}
-              className={`category-chip ${activeCategory === cat.name ? "active" : ""}`}
-              onClick={() => setActiveCategory(cat.name)}
+              className={`category-card ${activeCategory === cat.name ? "active" : ""}`}
+              onClick={() => {
+                setActiveCategory(cat.name);
+                setSearchQuery("");
+              }}
+              style={{
+                "--cat-color": cat.color,
+              }}
             >
-              <i className={cat.icon}></i>
-              <span>{cat.name}</span>
+              <div className="category-card-icon">
+                <i className={cat.icon}></i>
+              </div>
+              <span className="category-card-name">{cat.name}</span>
+              <span className="category-card-count">
+                {getProductCount(cat.name)} items
+              </span>
             </button>
           ))}
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Results Info */}
+      <div className="results-info">
+        <h2 className="section-title">{activeCategory}</h2>
+        <span className="results-count">
+          {filteredProducts.length} result{filteredProducts.length !== 1 ? "s" : ""}
+        </span>
+      </div>
+
+      {/* Products */}
       <section className="products-section">
-        <div className="section-header">
-          <h2 className="section-title">Featured Products</h2>
-          <Link to="/categories" className="view-all">
-            View All <i className="bi bi-chevron-right"></i>
-          </Link>
-        </div>
         <div className="products-grid">
           {filteredProducts.map((product) => (
             <div key={product.id} className="product-card">
@@ -197,23 +242,9 @@ export default function Home() {
         {filteredProducts.length === 0 && (
           <div className="no-results">
             <i className="bi bi-search"></i>
-            <p>No products found</p>
+            <p>No products found in {activeCategory}</p>
           </div>
         )}
-      </section>
-
-      {/* Promo Banner */}
-      <section className="promo-section">
-        <div className="promo-content">
-          <i className="bi bi-lightning-charge promo-icon"></i>
-          <div>
-            <h3 className="promo-title">Flash Sale</h3>
-            <p className="promo-text">Free shipping on orders over $50</p>
-          </div>
-        </div>
-        <Link to="/categories" className="promo-btn">
-          Explore
-        </Link>
       </section>
     </div>
   );
