@@ -240,7 +240,18 @@ export default function AppRouter() {
           path="/search"
           element={
             <>
-              <Search />
+              <Search
+                cartToast={cartToast}
+                setCartToast={setCartToast}
+                addToCart={addToCart}
+                cart={cart}
+                removeFromCart={removeFromCart}
+                inWish={inWish}
+                toggleWish={toggleWish}
+                wishlist={wishlist}
+                categories={categories}
+                products={products}
+              />
               <Footer />
             </>
           }

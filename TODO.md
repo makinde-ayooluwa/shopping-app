@@ -1,29 +1,16 @@
-# Cart System Implementation for Shopping App
+# Make Homepage Stunning (Enhanced Design)
 
-## Current Progress
-✅ Plan approved by user
+**Status:** Feedback received - elevating to stunning level with advanced effects.
 
-## Remaining Steps
-1. [✅] Update src/AppRouter.jsx: 
-   - Add cart state with localStorage load/save (like wishlist).
-   - Implement addToCart logic: check if exists (increment qty or "Already in cart" toast), else add with qty:1.
-   - Dynamic toast: {show, message} e.g. "Added {name}", "Incremented {name}", "Already in cart".
-   - Add removeFromCart(id), updateQuantity(id, qty).
-   - Pass cart, removeFromCart etc. to Home/Categories props.
+## Breakdown Steps:
+- [x] Step 1: Verified styles complete
+- [x] Step 2: Dev server at localhost:5178
+- [ ] Step 3: Enhance hero (dynamic bg, parallax)
+- [ ] Step 4: Upgrade product cards (3D tilt, glows, badges)
+- [ ] Step 5: Add particles/scroll animations, smooth transitions
+- [ ] Step 6: Update Header (app logo), test responsive/hot-reload
+- [ ] Step 7: Final demo & complete
 
-2. [✅] Update src/components/CartToast.jsx: 
-   - Use cartToast.message in span.
+**Live preview:** localhost:5178 (hot-reloads changes)
 
-3. [✅] Read src/pages/Categories.jsx (confirm structure like Home).
 
-4. [✅] Update src/pages/Home.jsx: 
-   - Add cart UI section (e.g. show cart length badge).
-   - Add category filter for cart items.
-   - Render filtered cart items with ProductCard (modify for cart mode? or new component), add remove qty buttons.
-
-5. [✅] Update src/pages/Categories.jsx similarly.
-
-6. [✅] Test: 
-   - `npm run dev` running, changes complete - cart storage in localStorage, dynamic toast text ("Added...", "already in cart - quantity incremented!"), cart filtering by category in Home/Categories with remove buttons.
-
-7. [ ] Complete task.
