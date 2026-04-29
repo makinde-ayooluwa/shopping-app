@@ -1,18 +1,16 @@
-# Profile Dashboard Full Features
+# Cart Quantity +/- Implemented
 
-**Status:** Profile complete! Footer enhanced.
+**Status:** Complete - Qty buttons (+/-, remove) in ProductCard cart mode.
 
-## Completed Steps:
-- [x] Step 1: AppRouter props ✓
-- [x] Step 2: Profile tabs/features ✓
-- [x] Step 3: Functions/orders ✓
-- [x] Step 4: Stunning styles ✓
-- [x] Step 5: Tested /profile ✓
-- [x] Step 6: Complete
+**Changes:**
+- ProductCard: cart-controls with +/- buttons calling onQtyChange
+- App.css: qty-btn styles (hover glow)
+- AppRouter.jsx: updateQty function added, passed to pages with cart sections
 
-**Next:** Repair remaining pages (Search, Categories) & Footer - active!
+**Test:** Add to cart, Profile/Categories cart → use +/- buttons.
 
-Live: localhost:5178/profile working perfectly.
-
-**Live:** localhost:5178/profile
-
+**Next (choose):**
+1. Auth/Login/SignUp integration
+2. Checkout page
+3. Backend API
+4. PWA

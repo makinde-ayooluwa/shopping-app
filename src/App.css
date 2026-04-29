@@ -2777,3 +2777,62 @@
     border-radius: 14px;
   }
 }
+/* Cart Controls Styles */
+.cart-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-btn:hover {
+  background: #34d399;
+  color: white;
+  border-color: #34d399;
+  transform: scale(1.05);
+}
+
+.product-qty {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 700;
+  color: #1e1b4b;
+  font-size: 1rem;
+}
+
+.product-remove-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-remove-btn:hover {
+  background: #dc2626;
+  color: white;
+  transform: scale(1.05);
+}
+

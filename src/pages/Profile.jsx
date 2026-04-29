@@ -336,7 +336,7 @@ export default function Profile({
                       <button className="save-btn">Save Changes</button>
                     </div>
                     <div className="account-actions">
-                      <Link to="/login" className="action-btn secondary">
+                      <Link to="/forgot-password" className="action-btn secondary">
                         Change Password
                       </Link>
                       <button className="action-btn danger">
