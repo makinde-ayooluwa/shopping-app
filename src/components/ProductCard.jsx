@@ -5,6 +5,9 @@ export default function ProductCard({
   toggleWish,
   addToCart,
   StarRating,
+  cartItemMode = false,
+  quantity = 1,
+  onRemove = () => {},
 }) {
   return (
     <div
@@ -29,13 +32,29 @@ export default function ProductCard({
         <StarRating rating={product.rating} />
         <div className="product-footer">
           <span className="product-price">${product.price.toFixed(2)}</span>
-          <button
-            className="product-add-btn"
-            onClick={() => addToCart(product)}
-            aria-label="Add to cart"
-          >
-            <i className="bi bi-cart-plus"></i>
-          </button>
+          {!cartItemMode ? (
+            <button
+              className="product-add-btn"
+              onClick={() => addToCart(product)}
+              aria-label="Add to cart"
+            >
+              <i className="bi bi-cart-plus"></i>
+            </button>
+          ) : (
+            <>
+              <span className="product-qty">Qty: {quantity}</span>
+              <button
+                className="product-remove-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove(product.id);
+                }}
+                aria-label="Remove from cart"
+              >
+                <i className="bi bi-trash"></i>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -50,12 +50,15 @@ export default function Categories({
   cartToast,
   setCartToast,
   addToCart,
+  cart,
+  removeFromCart,
   inWish,
   toggleWish,
   wishlist,
   categories,
   products,
 }) {
+  const [cartFilter, setCartFilter] = useState("All");
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("default");
@@ -105,7 +108,7 @@ export default function Categories({
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
       (pmax == Infinity || p.price <= pmax),
   );
-  console.log(filtered)
+  console.log(filtered);
   if (sortBy == "price-low")
     filtered = [...filtered].sort((a, b) => a.price - b.price);
   else if (sortBy == "price-high")
@@ -113,8 +116,7 @@ export default function Categories({
   else if (sortBy == "rating")
     filtered = [...filtered].sort((a, b) => b.rating - a.rating);
 
-  const sortLabel =
-    sortOptions.find((o) => o.id == sortBy)?.label ?? "Default";
+  const sortLabel = sortOptions.find((o) => o.id == sortBy)?.label ?? "Default";
 
   return (
     <div className="categories-page">
@@ -242,6 +244,55 @@ export default function Categories({
           )}
         </section>
       </div>
+
+      {/* Cart Section */}
+      {cart && cart.length > 0 && (
+        <section className="cart-section">
+          <div className="section-header">
+            <h2 className="section-title">Your Cart ({cart.length} items)</h2>
+            <Link to="/cart" className="view-all">
+              View Full Cart <i className="bi bi-chevron-right"></i>
+            </Link>
+          </div>
+          <div className="categories-scroll">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                className={`category-chip ${cartFilter === cat.name ? "active" : ""}`}
+                style={{
+                  backgroundColor:
+                    cartFilter === cat.name ? cat.color : "#ffffff",
+                  borderColor: cartFilter === cat.name ? cat.color : "#e2e8f0",
+                }}
+                onClick={() => setCartFilter(cat.name)}
+              >
+                <i className={cat.icon}></i>
+                <span>{cat.name}</span>
+              </button>
+            ))}
+          </div>
+          <div className="products-grid">
+            {cart
+              .filter(
+                (item) => cartFilter === "All" || item.category === cartFilter,
+              )
+              .map((item, index) => (
+                <ProductCard
+                  key={item.id}
+                  product={item}
+                  index={index}
+                  inWish={inWish}
+                  toggleWish={toggleWish}
+                  addToCart={addToCart}
+                  StarRating={StarRating}
+                  cartItemMode={true}
+                  quantity={item.quantity}
+                  onRemove={removeFromCart}
+                />
+              ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

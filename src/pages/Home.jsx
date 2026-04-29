@@ -28,6 +28,8 @@ export default function Home({
   cartToast,
   setCartToast,
   addToCart,
+  cart,
+  removeFromCart,
   inWish,
   toggleWish,
   wishlist,
@@ -36,6 +38,7 @@ export default function Home({
 }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [cartFilter, setCartFilter] = useState("All");
 
   const filteredProducts = products.filter((p) => {
     const matchesCategory =
@@ -131,6 +134,56 @@ export default function Home({
           </div>
         )}
       </section>
+
+      {/* Cart Section */}
+      {cart && cart.length > 0 && (
+        <section className="cart-section">
+          <div className="section-header">
+            <h2 className="section-title">Your Cart ({cart.length} items)</h2>
+            <Link to="/cart" className="view-all">
+              View Full Cart <i className="bi bi-chevron-right"></i>
+            </Link>
+          </div>
+          <div className="categories-scroll">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                className={`category-chip ${cartFilter === cat.name ? "active" : ""}`}
+                style={{
+                  backgroundColor:
+                    cartFilter === cat.name ? cat.color : "#ffffff",
+                  borderColor:
+                    cartFilter === cat.name ? cat.color : "#e2e8f0",
+                }}
+                onClick={() => setCartFilter(cat.name)}
+              >
+                <i className={cat.icon}></i>
+                <span>{cat.name}</span>
+              </button>
+            ))}
+          </div>
+          <div className="products-grid">
+            {cart
+              .filter((item) =>
+                cartFilter === "All" || item.category === cartFilter
+              )
+              .map((item, index) => (
+                <ProductCard
+                  key={item.id}
+                  product={item}
+                  index={index}
+                  inWish={inWish}
+                  toggleWish={toggleWish}
+                  addToCart={addToCart}
+                  StarRating={StarRating}
+                  cartItemMode={true}
+                  quantity={item.quantity}
+                  onRemove={removeFromCart}
+                />
+              ))}
+          </div>
+        </section>
+      )}
 
       {/* Promo Banner */}
       <section className="promo-section">

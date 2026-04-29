@@ -5,7 +5,7 @@ import Search from "./pages/Search";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Footer from "./components/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AppRouter() {
   const categories = [
@@ -143,7 +143,7 @@ export default function AppRouter() {
       tag: "Sale",
     },
   ];
-  const [cartToast, setCartToast] = useState({ show: false, productName: "" });
+  const [cartToast, setCartToast] = useState({ show: false, message: "" });
   const [wishlist, setWishlist] = useState(() => {
     try {
       const s = localStorage.getItem("shopping_wishlist");
@@ -152,9 +152,30 @@ export default function AppRouter() {
       return [];
     }
   });
-  const addToCart = ({name}) => {
-    setCartToast({ show: true, productName: name });
-    setTimeout(() => setCartToast({ show: false, productName: "" }), 2200);
+  const [cart, setCart] = useState(() => {
+    try {
+      const s = localStorage.getItem("shopping_cart");
+      return s ? JSON.parse(s) : [];
+    } catch {
+      return [];
+    }
+  });
+  const addToCart = (product) => {
+    const existingItem = cart.find(item => item.id === product.id);
+    let message;
+    if (existingItem) {
+      message = `${product.name} already in cart - quantity incremented!`;
+      setCart(prevCart => prevCart.map(item =>
+        item.id === product.id 
+          ? { ...item, quantity: (item.quantity || 1) + 1 }
+          : item
+      ));
+    } else {
+      message = `Added ${product.name} to cart!`;
+      setCart(prevCart => [...prevCart, { ...product, quantity: 1 }]);
+    }
+    setCartToast({ show: true, message });
+    setTimeout(() => setCartToast({ show: false, message: "" }), 2200);
   };
   const inWish = (id) => wishlist.includes(id);
   const toggleWish = (id, ev) => {
@@ -163,6 +184,15 @@ export default function AppRouter() {
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   };
+
+  const removeFromCart = (id) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== id));
+  };
+
+  useEffect(() => {
+    localStorage.setItem("shopping_cart", JSON.stringify(cart));
+  }, [cart]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -174,6 +204,8 @@ export default function AppRouter() {
                 cartToast={cartToast}
                 setCartToast={setCartToast}
                 addToCart={addToCart}
+                cart={cart}
+                removeFromCart={removeFromCart}
                 inWish={inWish}
                 toggleWish={toggleWish}
                 wishlist={wishlist}
@@ -192,6 +224,8 @@ export default function AppRouter() {
                 cartToast={cartToast}
                 setCartToast={setCartToast}
                 addToCart={addToCart}
+                cart={cart}
+                removeFromCart={removeFromCart}
                 inWish={inWish}
                 toggleWish={toggleWish}
                 wishlist={wishlist}

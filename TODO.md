@@ -1,19 +1,29 @@
-# Shopping App Design TODO
+# Cart System Implementation for Shopping App
 
-## Footer Redesign (Complete)
-- [x] Update `src/App.css` with modern glassmorphism footer styles
-- [x] Update `src/components/Footer.jsx` with CSS classes and active link logic
-- [x] Update `src/index.css` with soft background
+## Current Progress
+✅ Plan approved by user
 
-## Home Page Design (Complete)
-- [x] Create `src/pages/NotFound.jsx`
-- [x] Design `src/pages/Home.jsx` with hero, categories, products, promo
-- [x] Update `src/AppRouter.jsx` to use NotFound component
-- [x] Add home page and 404 styles to `src/App.css`
-- [x] Update `src/index.css` for page padding
-- [x] Final review
+## Remaining Steps
+1. [✅] Update src/AppRouter.jsx: 
+   - Add cart state with localStorage load/save (like wishlist).
+   - Implement addToCart logic: check if exists (increment qty or "Already in cart" toast), else add with qty:1.
+   - Dynamic toast: {show, message} e.g. "Added {name}", "Incremented {name}", "Already in cart".
+   - Add removeFromCart(id), updateQuantity(id, qty).
+   - Pass cart, removeFromCart etc. to Home/Categories props.
 
+2. [✅] Update src/components/CartToast.jsx: 
+   - Use cartToast.message in span.
 
+3. [✅] Read src/pages/Categories.jsx (confirm structure like Home).
 
-- [ ] Test all functionality
+4. [✅] Update src/pages/Home.jsx: 
+   - Add cart UI section (e.g. show cart length badge).
+   - Add category filter for cart items.
+   - Render filtered cart items with ProductCard (modify for cart mode? or new component), add remove qty buttons.
 
+5. [✅] Update src/pages/Categories.jsx similarly.
+
+6. [✅] Test: 
+   - `npm run dev` running, changes complete - cart storage in localStorage, dynamic toast text ("Added...", "already in cart - quantity incremented!"), cart filtering by category in Home/Categories with remove buttons.
+
+7. [ ] Complete task.

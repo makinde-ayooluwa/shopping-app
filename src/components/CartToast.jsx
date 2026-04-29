@@ -3,7 +3,7 @@ export default function CartToast({cartToast}){
         
       <div className={`cart-toast ${cartToast.show ? "show" : ""}`}>
         <i className="bi bi-check-circle-fill"></i>
-        <span>{cartToast.productName} added to cart!</span>
+        <span>{cartToast.message}</span>
       </div>
     )
 }
