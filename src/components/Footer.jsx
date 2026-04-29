@@ -5,9 +5,9 @@ export default function Footer() {
 
   const footerLinks = [
     { id: 1, title: "Home", icon: "bi bi-house", link: "/" },
-    { id: 2, title: "Categories", icon: "bi bi-bookmarks", link: "/categories" },
+    { id: 2, title: "Categories", icon: "bi bi-grid-3x3-gap", link: "/categories" },
     // { id: 3, title: "Search", icon: "bi bi-search", link: "/search" },
-    { id: 3, title: "Me", icon: "bi bi-person", link: "/profile" },
+    { id: 4, title: "Profile", icon: "bi bi-person-circle", link: "/profile" },
   ];
 
   return (

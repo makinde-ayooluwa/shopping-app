@@ -250,7 +250,7 @@ export default function Categories({
         <section className="cart-section">
           <div className="section-header">
             <h2 className="section-title">Your Cart ({cart.length} items)</h2>
-            <Link to="/cart" className="view-all">
+            <Link to="/profile" className="view-all">
               View Full Cart <i className="bi bi-chevron-right"></i>
             </Link>
           </div>

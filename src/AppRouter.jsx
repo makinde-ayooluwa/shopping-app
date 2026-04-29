@@ -260,7 +260,18 @@ export default function AppRouter() {
           path="/profile"
           element={
             <>
-              <Profile />
+              <Profile 
+                cartToast={cartToast}
+                setCartToast={setCartToast}
+                addToCart={addToCart}
+                cart={cart}
+                removeFromCart={removeFromCart}
+                inWish={inWish}
+                toggleWish={toggleWish}
+                wishlist={wishlist}
+                categories={categories}
+                products={products}
+              />
               <Footer />
             </>
           }
