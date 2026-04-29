@@ -6,8 +6,12 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Footer from "./components/Footer";
 import { useState, useEffect } from "react";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import { userLocalStorage } from "./hooks/useLocalStorage";
 
 export default function AppRouter() {
+  const [user,setUser] = userLocalStorage();
   const categories = [
     { id: "all", name: "All", icon: "bi bi-grid", color: "#1e1b4b" },
     {
@@ -196,6 +200,8 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<Login user={user} setUser={setUser} />} />
+        <Route path="/signup" element={<SignUp user={user} setUser={setUser} />} />
         <Route
           path="/"
           element={
@@ -271,6 +277,8 @@ export default function AppRouter() {
                 wishlist={wishlist}
                 categories={categories}
                 products={products}
+                user={user}
+                setUser={setUser}
               />
               <Footer />
             </>
@@ -286,7 +294,6 @@ export default function AppRouter() {
           }
         />
       </Routes>
-      <Footer />
     </BrowserRouter>
   );
 }
