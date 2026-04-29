@@ -1,97 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
-const categories = [
-  { id: 1, name: "All", icon: "bi bi-grid" },
-  { id: 2, name: "Electronics", icon: "bi bi-laptop" },
-  { id: 3, name: "Fashion", icon: "bi bi-bag" },
-  { id: 4, name: "Home", icon: "bi bi-house-door" },
-  { id: 5, name: "Sports", icon: "bi bi-bicycle" },
-  { id: 6, name: "Beauty", icon: "bi bi-heart" },
-];
-
-const products = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    price: 79.99,
-    rating: 4.5,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
-    tag: "Best Seller",
-  },
-  {
-    id: 2,
-    name: "Smart Watch Pro",
-    price: 199.99,
-    rating: 4.8,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
-    tag: "New",
-  },
-  {
-    id: 3,
-    name: "Running Shoes",
-    price: 89.99,
-    rating: 4.3,
-    category: "Sports",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
-    tag: "Sale",
-  },
-  {
-    id: 4,
-    name: "Denim Jacket",
-    price: 59.99,
-    rating: 4.6,
-    category: "Fashion",
-    image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&h=400&fit=crop",
-    tag: "",
-  },
-  {
-    id: 5,
-    name: "Cozy Sofa",
-    price: 499.99,
-    rating: 4.7,
-    category: "Home",
-    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop",
-    tag: "Popular",
-  },
-  {
-    id: 6,
-    name: "Face Serum",
-    price: 34.99,
-    rating: 4.4,
-    category: "Beauty",
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=400&fit=crop",
-    tag: "",
-  },
-  {
-    id: 7,
-    name: "Gaming Mouse",
-    price: 49.99,
-    rating: 4.2,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
-    tag: "Hot",
-  },
-  {
-    id: 8,
-    name: "Yoga Mat",
-    price: 29.99,
-    rating: 4.5,
-    category: "Sports",
-    image: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400&h=400&fit=crop",
-    tag: "",
-  },
-];
-
+import Header from "../components/Header";
+import ProductCard from "../components/ProductCard";
 function StarRating({ rating }) {
   const fullStars = Math.floor(rating);
   const hasHalf = rating % 1 !== 0;
   const stars = [];
 
   for (let i = 0; i < fullStars; i++) {
-    stars.push(<i key={`full-${i}`} className="bi bi-star-fill star-filled"></i>);
+    stars.push(
+      <i key={`full-${i}`} className="bi bi-star-fill star-filled"></i>,
+    );
   }
   if (hasHalf) {
     stars.push(<i key="half" className="bi bi-star-half star-filled"></i>);
@@ -104,18 +23,35 @@ function StarRating({ rating }) {
   return <div className="star-rating">{stars}</div>;
 }
 
-export default function Home() {
+export default function Home({
+  cartToast,
+  setCartToast,
+  addToCart,
+  inWish,
+  toggleWish,
+  wishlist,
+  categories,
+  products,
+}) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredProducts = products.filter((p) => {
-    const matchesCategory = activeCategory === "All" || p.category === activeCategory;
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      activeCategory === "All" || p.category === activeCategory;
+    const matchesSearch = p.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   return (
     <div className="home-page">
+      <Header />
+      <div className={`cart-toast ${cartToast.show ? "show" : ""}`}>
+        <i className="bi bi-check-circle-fill"></i>
+        <span>{cartToast.productName} added to cart!</span>
+      </div>
       {/* Search Bar */}
       <div className="search-section">
         <div className="search-bar">
@@ -154,6 +90,12 @@ export default function Home() {
             <button
               key={cat.id}
               className={`category-chip ${activeCategory === cat.name ? "active" : ""}`}
+              style={{
+                backgroundColor:
+                  activeCategory === cat.name ? cat.color : "#ffffff",
+                borderColor:
+                  activeCategory === cat.name ? cat.color : "#e2e8f0",
+              }}
               onClick={() => setActiveCategory(cat.name)}
             >
               <i className={cat.icon}></i>
@@ -172,26 +114,16 @@ export default function Home() {
           </Link>
         </div>
         <div className="products-grid">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="product-card">
-              {product.tag && <span className="product-tag">{product.tag}</span>}
-              <div className="product-image-wrapper">
-                <img src={product.image} alt={product.name} loading="lazy" />
-                <button className="product-wishlist">
-                  <i className="bi bi-heart"></i>
-                </button>
-              </div>
-              <div className="product-info">
-                <h3 className="product-name">{product.name}</h3>
-                <StarRating rating={product.rating} />
-                <div className="product-footer">
-                  <span className="product-price">${product.price.toFixed(2)}</span>
-                  <button className="product-add-btn">
-                    <i className="bi bi-cart-plus"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
+          {filteredProducts.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={index}
+              inWish={inWish}
+              toggleWish={toggleWish}
+              addToCart={addToCart}
+              StarRating={StarRating}
+            />
           ))}
         </div>
         {filteredProducts.length === 0 && (
@@ -218,4 +150,3 @@ export default function Home() {
     </div>
   );
 }
-

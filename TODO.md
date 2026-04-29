@@ -13,3 +13,7 @@
 - [x] Update `src/index.css` for page padding
 - [x] Final review
 
+
+
+- [ ] Test all functionality
+

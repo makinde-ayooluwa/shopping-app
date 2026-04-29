@@ -1,163 +1,128 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-
-const categories = [
-  { id: "all", name: "All", icon: "bi bi-grid", color: "#1e1b4b" },
-  { id: "electronics", name: "Electronics", icon: "bi bi-laptop", color: "#3b82f6" },
-  { id: "fashion", name: "Fashion", icon: "bi bi-bag", color: "#ec4899" },
-  { id: "home", name: "Home", icon: "bi bi-house-door", color: "#f59e0b" },
-  { id: "sports", name: "Sports", icon: "bi bi-bicycle", color: "#10b981" },
-  { id: "beauty", name: "Beauty", icon: "bi bi-heart", color: "#8b5cf6" },
+import Header from "../components/Header";
+import ProductCard from "../components/ProductCard";
+const sortOptions = [
+  { id: "default", label: "Default", icon: "bi bi-arrow-down-up" },
+  {
+    id: "price-low",
+    label: "Price: Low to High",
+    icon: "bi bi-sort-numeric-down",
+  },
+  {
+    id: "price-high",
+    label: "Price: High to Low",
+    icon: "bi bi-sort-numeric-down-alt",
+  },
+  { id: "rating", label: "Highest Rated", icon: "bi bi-star-fill" },
 ];
 
-const products = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    price: 79.99,
-    rating: 4.5,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
-    tag: "Best Seller",
-  },
-  {
-    id: 2,
-    name: "Smart Watch Pro",
-    price: 199.99,
-    rating: 4.8,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
-    tag: "New",
-  },
-  {
-    id: 3,
-    name: "Running Shoes",
-    price: 89.99,
-    rating: 4.3,
-    category: "Sports",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
-    tag: "Sale",
-  },
-  {
-    id: 4,
-    name: "Denim Jacket",
-    price: 59.99,
-    rating: 4.6,
-    category: "Fashion",
-    image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&h=400&fit=crop",
-    tag: "",
-  },
-  {
-    id: 5,
-    name: "Cozy Sofa",
-    price: 499.99,
-    rating: 4.7,
-    category: "Home",
-    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop",
-    tag: "Popular",
-  },
-  {
-    id: 6,
-    name: "Face Serum",
-    price: 34.99,
-    rating: 4.4,
-    category: "Beauty",
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=400&fit=crop",
-    tag: "",
-  },
-  {
-    id: 7,
-    name: "Gaming Mouse",
-    price: 49.99,
-    rating: 4.2,
-    category: "Electronics",
-    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
-    tag: "Hot",
-  },
-  {
-    id: 8,
-    name: "Yoga Mat",
-    price: 29.99,
-    rating: 4.5,
-    category: "Sports",
-    image: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400&h=400&fit=crop",
-    tag: "",
-  },
-  {
-    id: 9,
-    name: "Leather Handbag",
-    price: 129.99,
-    rating: 4.7,
-    category: "Fashion",
-    image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
-    tag: "New",
-  },
-  {
-    id: 10,
-    name: "Table Lamp",
-    price: 45.99,
-    rating: 4.3,
-    category: "Home",
-    image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=400&fit=crop",
-    tag: "",
-  },
-  {
-    id: 11,
-    name: "Basketball",
-    price: 24.99,
-    rating: 4.6,
-    category: "Sports",
-    image: "https://images.unsplash.com/photo-1519861531473-92002639313f?w=400&h=400&fit=crop",
-    tag: "",
-  },
-  {
-    id: 12,
-    name: "Lipstick Set",
-    price: 19.99,
-    rating: 4.5,
-    category: "Beauty",
-    image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&h=400&fit=crop",
-    tag: "Sale",
-  },
+const priceRanges = [
+  { id: "all", label: "All", max: Infinity },
+  { id: "under50", label: "Under $50", max: 50 },
+  { id: "under100", label: "Under $100", max: 100 },
+  { id: "under200", label: "Under $200", max: 200 },
 ];
 
 function StarRating({ rating }) {
   const fullStars = Math.floor(rating);
   const hasHalf = rating % 1 !== 0;
   const stars = [];
-
-  for (let i = 0; i < fullStars; i++) {
-    stars.push(<i key={`full-${i}`} className="bi bi-star-fill star-filled"></i>);
-  }
-  if (hasHalf) {
-    stars.push(<i key="half" className="bi bi-star-half star-filled"></i>);
-  }
+  for (let i = 0; i < fullStars; i++)
+    stars.push(<i key={`f${i}`} className="bi bi-star-fill star-filled"></i>);
+  if (hasHalf)
+    stars.push(<i key="h" className="bi bi-star-half star-filled"></i>);
   const empty = 5 - fullStars - (hasHalf ? 1 : 0);
-  for (let i = 0; i < empty; i++) {
-    stars.push(<i key={`empty-${i}`} className="bi bi-star star-empty"></i>);
-  }
-
+  for (let i = 0; i < empty; i++)
+    stars.push(<i key={`e${i}`} className="bi bi-star star-empty"></i>);
   return <div className="star-rating">{stars}</div>;
 }
 
-export default function Categories() {
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
+    : "30, 27, 75";
+}
+
+export default function Categories({
+  cartToast,
+  setCartToast,
+  addToCart,
+  inWish,
+  toggleWish,
+  wishlist,
+  categories,
+  products
+}) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("default");
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [activePriceRange, setActivePriceRange] = useState("all");
+  const [animationKey, setAnimationKey] = useState(0);
+  const sortRef = useRef(null);
 
-  const getProductCount = (catName) => {
-    if (catName === "All") return products.length;
-    return products.filter((p) => p.category === catName).length;
+  useEffect(() => {
+    localStorage.setItem("shopping_wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+  useEffect(() => {
+    function handle(e) {
+      if (sortRef.current && !sortRef.current.contains(e.target))
+        setShowSortMenu(false);
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, []);
+
+  const getCount = (cn) =>
+    cn === "All"
+      ? products.length
+      : products.filter((p) => p.category === cn).length;
+
+  const changeCat = (cn) => {
+    setActiveCategory(cn);
+    setSearchQuery("");
+    setAnimationKey((k) => k + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const changeSort = (sid) => {
+    setSortBy(sid);
+    setShowSortMenu(false);
+    setAnimationKey((k) => k + 1);
+  };
+  const changePrice = (pid) => {
+    setActivePriceRange(pid);
+    setAnimationKey((k) => k + 1);
   };
 
-  const filteredProducts = products.filter((p) => {
-    const matchesCategory = activeCategory === "All" || p.category === activeCategory;
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const pmax =
+    priceRanges.find((r) => r.id === activePriceRange)?.max ?? Infinity;
+  let filtered = products.filter(
+    (p) =>
+      (activeCategory === "All" || p.category === activeCategory) &&
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (pmax === Infinity || p.price <= pmax),
+  );
+  if (sortBy === "price-low")
+    filtered = [...filtered].sort((a, b) => a.price - b.price);
+  else if (sortBy === "price-high")
+    filtered = [...filtered].sort((a, b) => b.price - a.price);
+  else if (sortBy === "rating")
+    filtered = [...filtered].sort((a, b) => b.rating - a.rating);
+
+  const sortLabel =
+    sortOptions.find((o) => o.id === sortBy)?.label ?? "Default";
 
   return (
     <div className="categories-page">
-      {/* Header */}
+      <Header />
+
+      <div className={`cart-toast ${cartToast.show ? "show" : ""}`}>
+        <i className="bi bi-check-circle-fill"></i>
+        <span>{cartToast.productName} added to cart!</span>
+      </div>
+
       <div className="categories-header">
         <Link to="/" className="back-btn">
           <i className="bi bi-arrow-left"></i>
@@ -165,8 +130,6 @@ export default function Categories() {
         <h1 className="categories-title">Categories</h1>
         <div className="header-spacer"></div>
       </div>
-
-      {/* Search */}
       <div className="search-section">
         <div className="search-bar">
           <i className="bi bi-search search-icon"></i>
@@ -178,20 +141,16 @@ export default function Categories() {
           />
         </div>
       </div>
-
-      {/* Category Cards */}
       <section className="category-cards-section">
         <div className="category-cards-grid">
           {categories.map((cat) => (
             <button
               key={cat.id}
               className={`category-card ${activeCategory === cat.name ? "active" : ""}`}
-              onClick={() => {
-                setActiveCategory(cat.name);
-                setSearchQuery("");
-              }}
+              onClick={() => changeCat(cat.name)}
               style={{
                 "--cat-color": cat.color,
+                "--cat-color-rgb": hexToRgb(cat.color),
               }}
             >
               <div className="category-card-icon">
@@ -199,54 +158,91 @@ export default function Categories() {
               </div>
               <span className="category-card-name">{cat.name}</span>
               <span className="category-card-count">
-                {getProductCount(cat.name)} items
+                {getCount(cat.name)} items
               </span>
             </button>
           ))}
         </div>
       </section>
 
-      {/* Results Info */}
-      <div className="results-info">
-        <h2 className="section-title">{activeCategory}</h2>
-        <span className="results-count">
-          {filteredProducts.length} result{filteredProducts.length !== 1 ? "s" : ""}
-        </span>
-      </div>
-
-      {/* Products */}
-      <section className="products-section">
-        <div className="products-grid">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="product-card">
-              {product.tag && <span className="product-tag">{product.tag}</span>}
-              <div className="product-image-wrapper">
-                <img src={product.image} alt={product.name} loading="lazy" />
-                <button className="product-wishlist">
-                  <i className="bi bi-heart"></i>
+      <div className="filters-bar">
+        <div className="sort-dropdown" ref={sortRef}>
+          <button
+            className={`sort-btn ${showSortMenu ? "active" : ""}`}
+            onClick={() => setShowSortMenu((v) => !v)}
+          >
+            <i className="bi bi-funnel"></i>
+            <span>{sortLabel}</span>
+            <i className={`bi bi-chevron-${showSortMenu ? "up" : "down"}`}></i>
+          </button>
+          {showSortMenu && (
+            <div className="sort-menu">
+              {sortOptions.map((opt) => (
+                <button
+                  key={opt.id}
+                  className={`sort-option ${sortBy === opt.id ? "active" : ""}`}
+                  onClick={() => changeSort(opt.id)}
+                >
+                  <i className={opt.icon}></i>
+                  <span>{opt.label}</span>
+                  {sortBy === opt.id && (
+                    <i className="bi bi-check2 sort-check"></i>
+                  )}
                 </button>
-              </div>
-              <div className="product-info">
-                <h3 className="product-name">{product.name}</h3>
-                <StarRating rating={product.rating} />
-                <div className="product-footer">
-                  <span className="product-price">${product.price.toFixed(2)}</span>
-                  <button className="product-add-btn">
-                    <i className="bi bi-cart-plus"></i>
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
+          )}
+        </div>
+        <div className="price-chips">
+          {priceRanges.map((r) => (
+            <button
+              key={r.id}
+              className={`price-chip ${activePriceRange === r.id ? "active" : ""}`}
+              onClick={() => changePrice(r.id)}
+            >
+              {r.label}
+            </button>
           ))}
         </div>
-        {filteredProducts.length === 0 && (
-          <div className="no-results">
-            <i className="bi bi-search"></i>
-            <p>No products found in {activeCategory}</p>
+
+        <div className="results-info">
+          <h2 className="section-title">{activeCategory}</h2>
+          <span className="results-count">
+            {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+
+        <section className="products-section">
+          <div className="products-grid" key={animationKey}>
+            {filtered.map((product, index) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                index={index}
+                inWish={inWish}
+                toggleWish={toggleWish}
+                addToCart={addToCart}
+                StarRating={StarRating}
+              />
+            ))}
           </div>
-        )}
-      </section>
+          {filtered.length === 0 ? (
+            <>
+              <div className="no-results">
+                <i className="bi bi-search"></i>
+                <p>No products found in {activeCategory}</p>
+                {activePriceRange !== "all" ? (
+                  <p>Try adjusting your price filter</p>
+                ) : (
+                  ""
+                )}
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
-

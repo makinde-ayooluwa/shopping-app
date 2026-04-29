@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
+import Header from "../components/Header";
 
 export default function NotFound() {
   return (
+    
+    <>
+    <Header/>
     <div className="not-found-page">
       <div className="not-found-content">
         <i className="bi bi-exclamation-circle not-found-icon"></i>
@@ -16,5 +20,6 @@ export default function NotFound() {
         </Link>
       </div>
     </div>
+    </>
   );
 }
