@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
+import CartToast from "../components/CartToast";
 function StarRating({ rating }) {
   const fullStars = Math.floor(rating);
   const hasHalf = rating % 1 !== 0;
@@ -48,10 +49,7 @@ export default function Home({
   return (
     <div className="home-page">
       <Header />
-      <div className={`cart-toast ${cartToast.show ? "show" : ""}`}>
-        <i className="bi bi-check-circle-fill"></i>
-        <span>{cartToast.productName} added to cart!</span>
-      </div>
+      <CartToast cartToast={cartToast} />
       {/* Search Bar */}
       <div className="search-section">
         <div className="search-bar">

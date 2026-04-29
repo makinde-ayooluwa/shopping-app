@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
+import CartToast from "../components/CartToast";
 const sortOptions = [
   { id: "default", label: "Default", icon: "bi bi-arrow-down-up" },
   {
@@ -53,7 +54,7 @@ export default function Categories({
   toggleWish,
   wishlist,
   categories,
-  products
+  products,
 }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -118,10 +119,7 @@ export default function Categories({
     <div className="categories-page">
       <Header />
 
-      <div className={`cart-toast ${cartToast.show ? "show" : ""}`}>
-        <i className="bi bi-check-circle-fill"></i>
-        <span>{cartToast.productName} added to cart!</span>
-      </div>
+      <CartToast cartToast={cartToast} />
 
       <div className="categories-header">
         <Link to="/" className="back-btn">
