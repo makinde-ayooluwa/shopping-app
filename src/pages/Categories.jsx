@@ -77,9 +77,9 @@ export default function Categories({
   }, []);
 
   const getCount = (cn) =>
-    cn === "All"
+    cn == "All"
       ? products.length
-      : products.filter((p) => p.category === cn).length;
+      : products.filter((p) => p.category == cn).length;
 
   const changeCat = (cn) => {
     setActiveCategory(cn);
@@ -98,22 +98,23 @@ export default function Categories({
   };
 
   const pmax =
-    priceRanges.find((r) => r.id === activePriceRange)?.max ?? Infinity;
+    priceRanges.find((r) => r.id == activePriceRange)?.max ?? Infinity;
   let filtered = products.filter(
     (p) =>
-      (activeCategory === "All" || p.category === activeCategory) &&
+      (activeCategory == "All" || p.category == activeCategory) &&
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (pmax === Infinity || p.price <= pmax),
+      (pmax == Infinity || p.price <= pmax),
   );
-  if (sortBy === "price-low")
+  console.log(filtered)
+  if (sortBy == "price-low")
     filtered = [...filtered].sort((a, b) => a.price - b.price);
-  else if (sortBy === "price-high")
+  else if (sortBy == "price-high")
     filtered = [...filtered].sort((a, b) => b.price - a.price);
-  else if (sortBy === "rating")
+  else if (sortBy == "rating")
     filtered = [...filtered].sort((a, b) => b.rating - a.rating);
 
   const sortLabel =
-    sortOptions.find((o) => o.id === sortBy)?.label ?? "Default";
+    sortOptions.find((o) => o.id == sortBy)?.label ?? "Default";
 
   return (
     <div className="categories-page">
@@ -144,7 +145,7 @@ export default function Categories({
           {categories.map((cat) => (
             <button
               key={cat.id}
-              className={`category-card ${activeCategory === cat.name ? "active" : ""}`}
+              className={`category-card ${activeCategory == cat.name ? "active" : ""}`}
               onClick={() => changeCat(cat.name)}
               style={{
                 "--cat-color": cat.color,
@@ -178,12 +179,12 @@ export default function Categories({
               {sortOptions.map((opt) => (
                 <button
                   key={opt.id}
-                  className={`sort-option ${sortBy === opt.id ? "active" : ""}`}
+                  className={`sort-option ${sortBy == opt.id ? "active" : ""}`}
                   onClick={() => changeSort(opt.id)}
                 >
                   <i className={opt.icon}></i>
                   <span>{opt.label}</span>
-                  {sortBy === opt.id && (
+                  {sortBy == opt.id && (
                     <i className="bi bi-check2 sort-check"></i>
                   )}
                 </button>
@@ -195,7 +196,7 @@ export default function Categories({
           {priceRanges.map((r) => (
             <button
               key={r.id}
-              className={`price-chip ${activePriceRange === r.id ? "active" : ""}`}
+              className={`price-chip ${activePriceRange == r.id ? "active" : ""}`}
               onClick={() => changePrice(r.id)}
             >
               {r.label}
@@ -224,7 +225,7 @@ export default function Categories({
               />
             ))}
           </div>
-          {filtered.length === 0 ? (
+          {filtered.length == 0 ? (
             <>
               <div className="no-results">
                 <i className="bi bi-search"></i>
