@@ -152,7 +152,7 @@ export default function AppRouter() {
       return [];
     }
   });
-  const addToCart = (name) => {
+  const addToCart = ({name}) => {
     setCartToast({ show: true, productName: name });
     setTimeout(() => setCartToast({ show: false, productName: "" }), 2200);
   };

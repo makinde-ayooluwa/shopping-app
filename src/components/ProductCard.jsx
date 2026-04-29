@@ -31,7 +31,7 @@ export default function ProductCard({
           <span className="product-price">${product.price.toFixed(2)}</span>
           <button
             className="product-add-btn"
-            onClick={() => addToCart(product.name)}
+            onClick={() => addToCart(product)}
             aria-label="Add to cart"
           >
             <i className="bi bi-cart-plus"></i>
