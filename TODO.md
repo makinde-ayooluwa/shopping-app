@@ -10,7 +10,5 @@
 **Test:** Add to cart, Profile/Categories cart → use +/- buttons.
 
 **Next (choose):**
-1. Auth/Login/SignUp integration
-2. Checkout page
-3. Backend API
-4. PWA
+1. Auth/Login/SignUp integration ✅ (partially done)
+2. Checkout page ✅ **COMPLETED**

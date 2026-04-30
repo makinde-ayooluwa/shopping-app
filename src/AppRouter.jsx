@@ -3,12 +3,13 @@ import Home from "./pages/Home";
 import Categories from "./pages/Categories";
 import Search from "./pages/Search";
 import Profile from "./pages/Profile";
+import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import Footer from "./components/Footer";
 import { useState, useEffect } from "react";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import { userLocalStorage } from "./hooks/useLocalStorage";
+import { ordersLocalStorage, userLocalStorage } from "./hooks/useLocalStorage";
 
 export default function AppRouter() {
   const [user,setUser] = userLocalStorage();
@@ -197,6 +198,8 @@ export default function AppRouter() {
     localStorage.setItem("shopping_cart", JSON.stringify(cart));
   }, [cart]);
 
+  const [orders, setOrders, addOrder] = ordersLocalStorage();
+
   return (
     <BrowserRouter>
       <Routes>
@@ -288,6 +291,23 @@ export default function AppRouter() {
               />
               <Footer user={user} setUser={setUser} />
             </>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <Checkout
+              cartToast={cartToast}
+              setCartToast={setCartToast}
+              cart={cart}
+              removeFromCart={removeFromCart}
+              user={user}
+              setUser={setUser}
+              products={products}
+              orders={orders}
+              setOrders={setOrders}
+              addOrder={addOrder}
+            />
           }
         />
         <Route

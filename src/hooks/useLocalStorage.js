@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const userLocalStorage = function() {
+const userLocalStorage = function () {
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem("user");
@@ -19,5 +19,39 @@ const userLocalStorage = function() {
   }, [user]);
 
   return [user, setUser];
-}
-export {userLocalStorage};
+};
+const ordersLocalStorage = function () {
+  const [orders, setOrdersState] = useState(() => {
+    try {
+      const stored = localStorage.getItem("orders");
+      const parsed = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("orders", JSON.stringify(orders));
+  }, [orders]);
+
+  // ✅ Safe setter (always keeps array)
+  const setOrders = (value) => {
+    if (typeof value === "function") {
+      setOrdersState((prev) => {
+        const result = value(prev);
+        return Array.isArray(result) ? result : [result];
+      });
+    } else {
+      setOrdersState(Array.isArray(value) ? value : [value]);
+    }
+  };
+
+  // ✅ Append helper (best way)
+  const addOrder = (newOrder) => {
+    setOrdersState((prev) => [...prev, newOrder]);
+  };
+
+  return [orders, setOrders, addOrder];
+};
+export { userLocalStorage, ordersLocalStorage };
