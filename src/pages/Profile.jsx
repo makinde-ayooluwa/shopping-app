@@ -41,15 +41,6 @@ export default function Profile({
   setOrders
 }) {
   const [activeTab, setActiveTab] = useState("cart");
-  // const [user, setUser] = useState({
-  //   name: "John Doe",
-  //   email: "john@example.com",
-  //   phone: "+1 (555) 123-4567",
-  //   address: "123 Main St, City, State 12345",
-  //   orders: 12,
-  //   totalSpent: "1,245.67",
-  //   currency: "$",
-  // });
 
   const updateQty = (id, delta) => {
     setCart((prevCart) =>
