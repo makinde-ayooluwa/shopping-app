@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import CartToast from "../components/CartToast";
+import { FLUTTERWAVE_PUBLIC_KEY } from "../constants/flutterwave";
 
 export default function Checkout({
   cartToast,
@@ -13,12 +14,12 @@ export default function Checkout({
   products,
   orders,
   setOrders,
-  addOrder
+  addOrder,
 }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
-//   const [orders, setorders] = useState(null);
+  //   const [orders, setorders] = useState(null);
   const [adminNotificationSent, setAdminNotificationSent] = useState(false);
   const [shippingInfo, setShippingInfo] = useState({
     fullname: user?.fullname || "",
@@ -30,7 +31,7 @@ export default function Checkout({
     zipCode: "",
     country: "USA",
   });
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState("flutterwave");
   const [cardInfo, setCardInfo] = useState({
     number: "",
     expiry: "",
@@ -40,7 +41,7 @@ export default function Checkout({
 
   // Calculate totals
   const subtotal = cart.reduce((sum, item) => {
-    const product = products.find(p => p.id === item.id);
+    const product = products.find((p) => p.id === item.id);
     return sum + (product?.price || 0) * (item.quantity || 1);
   }, 0);
   const shipping = subtotal > 50 ? 0 : 9.99;
@@ -62,18 +63,44 @@ export default function Checkout({
   };
 
   const handleFlutterWavePayment = async (total) => {
-    setLoading(true);
+  setLoading(true);
 
-    // Simulate Flutterwave payment processing
-    setTimeout(() => {
-      // Create order object
+  FlutterwaveCheckout({
+    public_key: FLUTTERWAVE_PUBLIC_KEY,
+    tx_ref: Date.now().toString(),
+    amount: total,
+    currency: "USD",
+
+    payment_options: "card, banktransfer, ussd",
+
+    customer: {
+      email: shippingInfo.email,
+      phone_number: shippingInfo.phone,
+      name: shippingInfo.fullname,
+    },
+
+    customizations: {
+      title: "ShopNow",
+      description: "Payment for items in cart",
+      logo: "/logo.png",
+    },
+
+    callback: function (response) {
+      console.log("Flutterwave response:", response);
+
+      // Only proceed if successful
+      if (!response?.transaction_id) {
+        setLoading(false);
+        return;
+      }
+
       const order = {
         id: Date.now(),
         date: new Date().toISOString(),
         status: "Processing",
-        total: total,
-        items: cart.map(item => {
-          const product = products.find(p => p.id === item.id);
+        total,
+        items: cart.map((item) => {
+          const product = products.find((p) => p.id === item.id);
           return {
             ...product,
             quantity: item.quantity || 1,
@@ -82,38 +109,45 @@ export default function Checkout({
         shipping: shippingInfo,
         paymentMethod: "flutterwave",
         tracking: `#ORD-${Date.now().toString().slice(-6)}`,
-        paymentDetails: null
+        paymentDetails: response,
       };
 
-      // Update user orders (simulate)
-      const updatedUser = {
-        ...user,
-        orders: (user?.orders || 0) + 1,
-        totalSpent: ((parseFloat(user?.totalSpent?.replace(',', '') || 0) + parseFloat(total))).toFixed(2),
-      };
-      setUser(updatedUser);
+      setOrders((prev) => [...prev, order]);
 
-      // Clear cart
-      cart.forEach(item => removeFromCart(item.id));
+      setUser((prev) => ({
+        ...prev,
+        orders: (prev?.orders || 0) + 1,
+        totalSpent: (
+          parseFloat(prev?.totalSpent?.replace(",", "") || 0) +
+          parseFloat(total)
+        ).toFixed(2),
+      }));
 
-      // Store order data and show receipt
-      setOrders(prev => [...prev, order]);
+      cart.forEach((item) => removeFromCart(item.id));
+
       setShowReceipt(true);
       setLoading(false);
 
       setCartToast({
         show: true,
-        message: "Flutterwave payment successful! Please review your receipt.",
+        message: "Payment successful!",
         type: "success",
       });
-    }, 2000);
-  };
-const sendReceiptToAdmin = () => {
+    },
+
+    onclose: function () {
+      setLoading(false);
+      console.log("Payment cancelled");
+    },
+  });
+};
+  const sendReceiptToAdmin = () => {
     // Simulate sending receipt to admin
     setAdminNotificationSent(true);
     setCartToast({
       show: true,
-      message: "Receipt sent to admin for confirmation! Your order will be confirmed once payment is confirmed.",
+      message:
+        "Receipt sent to admin for confirmation! Your order will be confirmed once payment is confirmed.",
       type: "success",
     });
     setTimeout(() => {
@@ -124,9 +158,9 @@ const sendReceiptToAdmin = () => {
   const downloadReceipt = () => {
     // Create a simple text receipt for download
     const receiptText = generateReceiptText();
-    const blob = new Blob([receiptText], { type: 'text/plain' });
+    const blob = new Blob([receiptText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `receipt-${orders.tracking}.txt`;
     document.body.appendChild(a);
@@ -154,12 +188,16 @@ Address: ${orders.shipping.address}, ${orders.shipping.city}, ${orders.shipping.
 PAYMENT INFORMATION
 -------------------
 Method: ${orders.paymentMethod.toUpperCase()}
-${orders.paymentDetails ? `Card ending in: ****${orders.paymentDetails.lastFour}
-Cardholder: ${orders.paymentDetails.cardholderName}` : ''}
+${
+  orders.paymentDetails
+    ? `Card ending in: ****${orders.paymentDetails.lastFour}
+Cardholder: ${orders.paymentDetails.cardholderName}`
+    : ""
+}
 
 ORDER ITEMS
 -----------
-${orders.items.map(item => `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join('\n')}
+${orders.items.map((item) => `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join("\n")}
 
 ORDER SUMMARY
 -------------
@@ -210,11 +248,16 @@ For any questions, contact: admin@shopnow.com
           <div className="receipt-section">
             <h4>Customer Information</h4>
             <div className="receipt-details">
-              <p><strong>{order.shipping.fullname}</strong></p>
+              <p>
+                <strong>{order.shipping.fullname}</strong>
+              </p>
               <p>{order.shipping.email}</p>
               <p>{order.shipping.phone}</p>
               <p>{order.shipping.address}</p>
-              <p>{order.shipping.city}, {order.shipping.state} {order.shipping.zipCode}</p>
+              <p>
+                {order.shipping.city}, {order.shipping.state}{" "}
+                {order.shipping.zipCode}
+              </p>
               <p>{order.shipping.country}</p>
             </div>
           </div>
@@ -222,7 +265,9 @@ For any questions, contact: admin@shopnow.com
           <div className="receipt-section">
             <h4>Payment Information</h4>
             <div className="receipt-details">
-              <p><strong>{order.paymentMethod.toUpperCase()}</strong></p>
+              <p>
+                <strong>{order.paymentMethod.toUpperCase()}</strong>
+              </p>
               {order.paymentDetails && (
                 <p>Card ending in: ****{order.paymentDetails.lastFour}</p>
               )}
@@ -238,7 +283,9 @@ For any questions, contact: admin@shopnow.com
                     <span className="item-name">{item.name}</span>
                     <span className="item-qty">x{item.quantity}</span>
                   </div>
-                  <span className="item-price">${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="item-price">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -247,7 +294,14 @@ For any questions, contact: admin@shopnow.com
           <div className="receipt-totals">
             <div className="total-row">
               <span>Subtotal:</span>
-              <span>${(parseFloat(order.total) - 9.99 - (parseFloat(order.total) - 9.99) * 0.08).toFixed(2)}</span>
+              <span>
+                $
+                {(
+                  parseFloat(order.total) -
+                  9.99 -
+                  (parseFloat(order.total) - 9.99) * 0.08
+                ).toFixed(2)}
+              </span>
             </div>
             <div className="total-row">
               <span>Shipping:</span>
@@ -255,7 +309,9 @@ For any questions, contact: admin@shopnow.com
             </div>
             <div className="total-row">
               <span>Tax (8%):</span>
-              <span>${((parseFloat(order.total) - 9.99) * 0.08).toFixed(2)}</span>
+              <span>
+                ${((parseFloat(order.total) - 9.99) * 0.08).toFixed(2)}
+              </span>
             </div>
             <div className="total-row total">
               <span>TOTAL:</span>
@@ -281,7 +337,10 @@ For any questions, contact: admin@shopnow.com
 
         <div className="receipt-footer">
           <p>Thank you for shopping with ShopNow!</p>
-          <p>For questions: <a href="mailto:admin@shopnow.com">admin@shopnow.com</a></p>
+          <p>
+            For questions:{" "}
+            <a href="mailto:admin@shopnow.com">admin@shopnow.com</a>
+          </p>
         </div>
       </div>
     </div>
@@ -299,8 +358,8 @@ For any questions, contact: admin@shopnow.com
         date: new Date().toISOString(),
         status: "Processing",
         total: total.toFixed(2),
-        items: cart.map(item => {
-          const product = products.find(p => p.id === item.id);
+        items: cart.map((item) => {
+          const product = products.find((p) => p.id === item.id);
           return {
             ...product,
             quantity: item.quantity || 1,
@@ -309,22 +368,27 @@ For any questions, contact: admin@shopnow.com
         shipping: shippingInfo,
         paymentMethod,
         tracking: `#ORD-${Date.now().toString().slice(-6)}`,
-        paymentDetails: paymentMethod === "card" ? {
-          lastFour: cardInfo.number.slice(-4),
-          cardholderName: cardInfo.name
-        } : null
+        paymentDetails:
+          paymentMethod === "card"
+            ? {
+                lastFour: cardInfo.number.slice(-4),
+                cardholderName: cardInfo.name,
+              }
+            : null,
       };
 
       // Update user orders (simulate)
       const updatedUser = {
         ...user,
         orders: (user?.orders || 0) + 1,
-        totalSpent: ((parseFloat(user?.totalSpent?.replace(',', '') || 0) + total)).toFixed(2),
+        totalSpent: (
+          parseFloat(user?.totalSpent?.replace(",", "") || 0) + total
+        ).toFixed(2),
       };
       setUser(updatedUser);
 
       // Clear cart
-      cart.forEach(item => removeFromCart(item.id));
+      cart.forEach((item) => removeFromCart(item.id));
 
       // Store order data and show receipt
       setOrders(order);
@@ -359,7 +423,7 @@ For any questions, contact: admin@shopnow.com
     return (
       <div className="checkout-page">
         <Header user={user} />
-      <CartToast cartToast={cartToast} />
+        <CartToast cartToast={cartToast} />
         <div className="empty-cart">
           <i className="bi bi-cart-x"></i>
           <h2>Your cart is empty</h2>
@@ -386,7 +450,7 @@ For any questions, contact: admin@shopnow.com
             <h2>Order Summary</h2>
             <div className="order-items">
               {cart.map((item) => {
-                const product = products.find(p => p.id === item.id);
+                const product = products.find((p) => p.id === item.id);
                 if (!product) return null;
                 return (
                   <div key={item.id} className="order-item">
@@ -394,7 +458,9 @@ For any questions, contact: admin@shopnow.com
                     <div className="item-details">
                       <h4>{product.name}</h4>
                       <p>Qty: {item.quantity || 1}</p>
-                      <p>${(product.price * (item.quantity || 1)).toFixed(2)}</p>
+                      <p>
+                        ${(product.price * (item.quantity || 1)).toFixed(2)}
+                      </p>
                     </div>
                   </div>
                 );
@@ -408,7 +474,9 @@ For any questions, contact: admin@shopnow.com
               </div>
               <div className="total-row">
                 <span>Shipping:</span>
-                <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                <span>
+                  {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                </span>
               </div>
               <div className="total-row">
                 <span>Tax:</span>
@@ -515,7 +583,7 @@ For any questions, contact: admin@shopnow.com
             <div className="form-section">
               <h2>Payment Method</h2>
               <div className="payment-methods">
-                <label className="payment-option">
+                {/* <label className="payment-option">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -525,7 +593,7 @@ For any questions, contact: admin@shopnow.com
                   />
                   <span>Credit/Debit Card</span>
                   <i className="bi bi-credit-card"></i>
-                </label>
+                </label> */}
                 <label className="payment-option">
                   <input
                     type="radio"
@@ -606,7 +674,11 @@ For any questions, contact: admin@shopnow.com
               type={paymentMethod == "flutterwave" ? "button" : "submit"}
               className="checkout-btn"
               disabled={loading}
-              onClick={paymentMethod == "flutterwave" ? ()=>handleFlutterWavePayment(total.toFixed(2)) : undefined}
+              onClick={
+                paymentMethod == "flutterwave"
+                  ? () => handleFlutterWavePayment(total.toFixed(2))
+                  : undefined
+              }
             >
               {loading ? (
                 <>
@@ -614,15 +686,12 @@ For any questions, contact: admin@shopnow.com
                   Processing...
                 </>
               ) : (
-                <>
-                  Place Order - ${total.toFixed(2)}
-                </>
+                <>Place Order - ${total.toFixed(2)}</>
               )}
             </button>
           </form>
         </div>
       </div>
-
     </div>
   );
 }
