@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
+import CartToast from "../components/CartToast";
 function StarRating({ rating }) {
   const fullStars = Math.floor(rating);
   const hasHalf = rating % 1 !== 0;
@@ -85,6 +86,7 @@ export default function Profile({
         <>
           <div className="profile-page">
             <Header user={user} />
+            <CartToast cartToast={cartToast}/>
             <div className="profile-container">
               {/* Profile Header */}
               <div className="profile-header">
