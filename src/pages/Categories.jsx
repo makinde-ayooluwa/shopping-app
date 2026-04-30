@@ -57,6 +57,8 @@ export default function Categories({
   wishlist,
   categories,
   products,
+  user,
+  setUser
 }) {
   const [cartFilter, setCartFilter] = useState("All");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -120,7 +122,7 @@ export default function Categories({
 
   return (
     <div className="categories-page">
-      <Header />
+      <Header user={user} />
 
       <CartToast cartToast={cartToast} />
 

@@ -217,8 +217,10 @@ export default function AppRouter() {
                 wishlist={wishlist}
                 categories={categories}
                 products={products}
+                user={user}
+                setUser={setUser}
               />
-              <Footer />
+              <Footer user={user} setUser={setUser} />
             </>
           }
         />
@@ -237,8 +239,10 @@ export default function AppRouter() {
                 wishlist={wishlist}
                 categories={categories}
                 products={products}
+                user={user}
+                setUser={setUser}
               />
-              <Footer />
+              <Footer user={user} setUser={setUser} />
             </>
           }
         />
@@ -257,8 +261,10 @@ export default function AppRouter() {
                 wishlist={wishlist}
                 categories={categories}
                 products={products}
+                user={user}
+                setUser={setUser}
               />
-              <Footer />
+              <Footer user={user} setUser={setUser} />
             </>
           }
         />
@@ -280,7 +286,7 @@ export default function AppRouter() {
                 user={user}
                 setUser={setUser}
               />
-              <Footer />
+              <Footer user={user} setUser={setUser} />
             </>
           }
         />
@@ -288,8 +294,8 @@ export default function AppRouter() {
           path="*"
           element={
             <>
-              <NotFound />
-              <Footer />
+              <NotFound user={user} setUser={setUser} />
+              <Footer user={user} setUser={setUser} />
             </>
           }
         />

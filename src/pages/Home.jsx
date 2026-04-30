@@ -35,6 +35,7 @@ export default function Home({
   wishlist,
   categories,
   products,
+  user, setUser
 }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,7 +52,7 @@ export default function Home({
 
   return (
     <div className="home-page">
-      <Header />
+      <Header user={user} />
       <CartToast cartToast={cartToast} />
       {/* Search Bar */}
       <div className="search-section">

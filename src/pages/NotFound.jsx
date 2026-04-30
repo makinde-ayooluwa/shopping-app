@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 
-export default function NotFound() {
+export default function NotFound({user,setUser}) {
   return (
     
     <>
-    <Header/>
+    <Header user={user} />
     <div className="not-found-page">
       <div className="not-found-content">
         <i className="bi bi-exclamation-circle not-found-icon"></i>

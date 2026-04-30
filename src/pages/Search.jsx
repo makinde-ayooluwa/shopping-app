@@ -36,6 +36,8 @@ export default function Search({
   wishlist,
   categories,
   products,
+  user,
+  setUser
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -60,7 +62,7 @@ export default function Search({
 
   return (
     <div className="search-page">
-      <Header />
+      <Header user={user} />
       <CartToast cartToast={cartToast} />
 
       {/* Hero Search Bar */}

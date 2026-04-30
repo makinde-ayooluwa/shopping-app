@@ -1,14 +1,20 @@
 import { Link, useLocation } from "react-router-dom";
 
-export default function Footer() {
+export default function Footer({user,setUser}) {
   const location = useLocation();
 
-  const footerLinks = [
-    { id: 1, title: "Home", icon: "bi bi-house", link: "/" },
-    { id: 2, title: "Categories", icon: "bi bi-grid-3x3-gap", link: "/categories" },
-    // { id: 3, title: "Search", icon: "bi bi-search", link: "/search" },
-    { id: 4, title: "Profile", icon: "bi bi-person-circle", link: "/profile" },
-  ];
+  const isLoggedIn = !!user;
+
+const footerLinks = [
+  { id: 1, title: "Home", icon: "bi bi-house", link: "/" },
+  { id: 2, title: "Categories", icon: "bi bi-grid-3x3-gap", link: "/categories" },
+  {
+    id: 4,
+    title: isLoggedIn ? "Profile" : "Login",
+    icon: "bi bi-person-circle",
+    link: isLoggedIn ? "/profile" : "/login",
+  },
+];
 
   return (
     <div className="footer">

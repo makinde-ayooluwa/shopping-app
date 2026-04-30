@@ -84,7 +84,7 @@ export default function Profile({
       {user ? (
         <>
           <div className="profile-page">
-            <Header />
+            <Header user={user} />
             <div className="profile-container">
               {/* Profile Header */}
               <div className="profile-header">
