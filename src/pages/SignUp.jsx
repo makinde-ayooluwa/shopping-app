@@ -2,6 +2,31 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import { userLocalStorage } from '../hooks/useLocalStorage';
+import { backendUrl } from '../constants/backendUrl';
+
+// Countries data with country codes and phone number lengths
+const countriesData = {
+  'United States': { code: '+1', phoneLength: 10 },
+  'United Kingdom': { code: '+44', phoneLength: 10 },
+  'Canada': { code: '+1', phoneLength: 10 },
+  'Australia': { code: '+61', phoneLength: 9 },
+  'Germany': { code: '+49', phoneLength: 11 },
+  'France': { code: '+33', phoneLength: 9 },
+  'India': { code: '+91', phoneLength: 10 },
+  'Japan': { code: '+81', phoneLength: 10 },
+  'China': { code: '+86', phoneLength: 11 },
+  'Nigeria': { code: '+234', phoneLength: 10 },
+  'Mexico': { code: '+52', phoneLength: 10 },
+  'Brazil': { code: '+55', phoneLength: 11 },
+  'Italy': { code: '+39', phoneLength: 10 },
+  'Spain': { code: '+34', phoneLength: 9 },
+  'Netherlands': { code: '+31', phoneLength: 9 },
+  'South Korea': { code: '+82', phoneLength: 10 },
+  'Singapore': { code: '+65', phoneLength: 8 },
+  'United Arab Emirates': { code: '+971', phoneLength: 9 },
+  'South Africa': { code: '+27', phoneLength: 9 },
+  'New Zealand': { code: '+64', phoneLength: 9 },
+};
 
 // Decode JWT token to get user data
 const decodeToken = (token) => {
@@ -23,9 +48,16 @@ const decodeToken = (token) => {
 
 export default function SignUp({user,setUser}) {
   const [fullname, setFullName] = useState('');
+  const [user_id] = useState(Math.random().toString(36).substr(2, 9));
   const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [picture, setPicture] = useState(null);
+  const [picturePreview, setPicturePreview] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [country, setCountry] = useState('');
+  const [currency, setCurrency] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
@@ -33,6 +65,26 @@ export default function SignUp({user,setUser}) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+
+  const handlePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPicture(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPicturePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const getCountryCode = () => {
+    return country ? countriesData[country]?.code || '' : '';
+  };
+
+  const getPhoneLength = () => {
+    return country ? countriesData[country]?.phoneLength || 0 : 0;
+  };
 if (user != null) {
     navigate("/");
   }
@@ -43,6 +95,32 @@ if (user != null) {
     }
     if (!email.includes('@')) {
       setError('Please enter a valid email address');
+      return false;
+    }
+    if (!address.trim()) {
+      setError('Address is required');
+      return false;
+    }
+    if (!country.trim()) {
+      setError('Country is required');
+      return false;
+    }
+    if (!phone.trim()) {
+      setError('Phone number is required');
+      return false;
+    }
+    const phoneDigits = phone.replace(/\D/g, '');
+    const expectedLength = getPhoneLength();
+    if (phoneDigits.length !== expectedLength) {
+      setError(`Phone number must be ${expectedLength} digits for ${country}`);
+      return false;
+    }
+    if (!picture) {
+      setError('Profile picture is required');
+      return false;
+    }
+    if (!currency.trim()) {
+      setError('Currency is required');
       return false;
     }
     if (password.length < 6) {
@@ -71,41 +149,69 @@ if (user != null) {
 
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        // Create user object with all form inputs
-        const userObject = {
-          fullname,
-          email,
-          password,
-          confirmPassword,
-          agreeTerms,
-          provider: 'email',
-          createdAt: new Date().toISOString(),
-        };
+    try {
+      // First, upload the image to the backend
+      let pictureUrl = '';
+      if (picture) {
+        const formData = new FormData();
+        formData.append('picture', picture);
 
-        // Save to localStorage as 'user'
-        setUser(userObject)
-        console.log('User registered successfully:', userObject);
+        const uploadResponse = await fetch(`${backendUrl}/upload-picture.php`, {
+          method: 'POST',
+          body: formData,
+        });
 
-        setSuccess('Account created successfully! Redirecting to login...');
-        setLoading(false);
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload picture');
+        }
 
-        // Clear form
-        setFullName('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-
-        // Redirect to home after successful signup
-        setTimeout(() => navigate('/'), 1500);
-      } catch (err) {
-        setError('Failed to create account. Please try again.');
-        setLoading(false);
-        console.log(err)
+        const uploadData = await uploadResponse.json();
+        pictureUrl = uploadData['url'];
+        console.log(uploadData)
       }
-    }, 1000);
+
+      // Create user object with all form inputs
+      const userObject = {
+        fullname,
+        user_id,
+        email,
+        address,
+        picture: pictureUrl, // Use the URL from backend
+        phone,
+        password,
+        country,
+        currency,
+        agreeTerms,
+        provider: 'email',
+        createdAt: new Date().toISOString(),
+      };
+
+      // Save to localStorage as 'user'
+      setUser(userObject)
+      console.log('User registered successfully:', userObject);
+
+      setSuccess('Account created successfully! Redirecting to login...');
+      setLoading(false);
+
+      // Clear form
+      setFullName('');
+      setEmail('');
+      setAddress('');
+      setPicture(null);
+      setPicturePreview('');
+      setPhone('');
+      setPassword('');
+      setConfirmPassword('');
+      setCountry('');
+      setCurrency('');
+
+      // Redirect to home after successful signup
+      // setTimeout(() => navigate('/'), 1500);
+    } catch (err) {
+      setError('Failed to create account. Please try again.');
+      setLoading(false);
+      console.log(err)
+    }
   };
 
   const handleGoogleSignUp = async () => {
@@ -149,6 +255,7 @@ if (user != null) {
         // Create user object with Google data
         const userObject = {
           fullname: decodedToken?.name,
+          user_id: Math.random().toString(36).substr(2, 9),
           email: decodedToken?.email,
           picture: decodedToken?.picture,
           agreeTerms: true,
@@ -233,6 +340,120 @@ setUser(userObject)
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+            </div>
+
+            {/* Country Field */}
+            <div className="form-field">
+              <label htmlFor="country" className="form-label">
+                <i className="bi bi-globe"></i>
+                Country
+              </label>
+              <select
+                id="country"
+                className="form-input"
+                value={country}
+                onChange={(e) => {
+                  setCountry(e.target.value);
+                  setPhone(''); // Reset phone when country changes
+                }}
+              >
+                <option value="">Select Country</option>
+                {Object.keys(countriesData).map((countryName) => (
+                  <option key={countryName} value={countryName}>
+                    {countryName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Phone Field */}
+            {country && (
+              <div className="form-field">
+                <label htmlFor="phone" className="form-label">
+                  <i className="bi bi-telephone"></i>
+                  Phone Number
+                </label>
+                <div className="phone-input-wrapper">
+                  <span className="country-code">{getCountryCode()}</span>
+                  <input
+                    type="tel"
+                    id="phone"
+                    className="form-input phone-input"
+                    placeholder={`Enter ${getPhoneLength()} digit number`}
+                    value={phone}
+                    onChange={(e) => {
+                      // Only allow digits
+                      const digitsOnly = e.target.value.replace(/\D/g, '');
+                      setPhone(digitsOnly);
+                    }}
+                    maxLength={getPhoneLength()}
+                  />
+                </div>
+                <small className="phone-hint">
+                  {phone.length}/{getPhoneLength()} digits
+                </small>
+              </div>
+            )}
+
+            {/* Address Field */}
+            <div className="form-field">
+              <label htmlFor="address" className="form-label">
+                <i className="bi bi-geo-alt"></i>
+                Address
+              </label>
+              <input
+                type="text"
+                id="address"
+                className="form-input"
+                placeholder="123 Main St, City, State"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
+
+            {/* Picture Field */}
+            <div className="form-field">
+              <label htmlFor="picture" className="form-label">
+                <i className="bi bi-image"></i>
+                Profile Picture
+              </label>
+              <input
+                type="file"
+                id="picture"
+                className="form-input"
+                accept="image/*"
+                onChange={handlePictureChange}
+              />
+              {picturePreview && (
+                <div className="picture-preview">
+                  <img src={picturePreview} alt="Profile Preview" />
+                </div>
+              )}
+            </div>
+
+            {/* Currency Field */}
+            <div className="form-field">
+              <label htmlFor="currency" className="form-label">
+                <i className="bi bi-currency-dollar"></i>
+                Currency
+              </label>
+              <select
+                id="currency"
+                className="form-input"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                <option value="">Select Currency</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="JPY">JPY - Japanese Yen</option>
+                <option value="CAD">CAD - Canadian Dollar</option>
+                <option value="AUD">AUD - Australian Dollar</option>
+                <option value="CHF">CHF - Swiss Franc</option>
+                <option value="CNY">CNY - Chinese Yuan</option>
+                <option value="NGN">NGN - Nigerian Naira</option>
+              </select>
             </div>
 
             {/* Password Field */}

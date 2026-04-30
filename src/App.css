@@ -1938,6 +1938,55 @@
   transform: scale(1.1);
 }
 
+/* Phone Input Wrapper */
+.phone-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.country-code {
+  position: absolute;
+  left: 16px;
+  font-weight: 700;
+  color: #64748b;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.phone-input {
+  padding-left: 70px !important;
+}
+
+.phone-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Picture Preview */
+.picture-preview {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  padding: 12px;
+}
+
+.picture-preview img {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
 /* Form Footer */
 .form-footer {
   display: flex;
