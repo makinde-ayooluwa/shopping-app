@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import CartToast from "../components/CartToast";
-import { FLUTTERWAVE_PUBLIC_KEY } from "../constants/flutterwave";
 
 export default function Checkout({
   cartToast,
