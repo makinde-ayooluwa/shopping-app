@@ -66,7 +66,7 @@ export default function Checkout({
   setLoading(true);
 
   FlutterwaveCheckout({
-    public_key: FLUTTERWAVE_PUBLIC_KEY,
+    public_key: "FLWPUBK_TEST-28942afd80a742a47d7444b85d081253-X",
     tx_ref: Date.now().toString(),
     amount: total,
     currency: "USD",
