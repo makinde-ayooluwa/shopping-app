@@ -198,7 +198,7 @@ export default function AppRouter() {
     localStorage.setItem("shopping_cart", JSON.stringify(cart));
   }, [cart]);
 
-  const [orders, setOrders, addOrder] = ordersLocalStorage();
+  const [orders, setOrders] = ordersLocalStorage();
 
   return (
     <BrowserRouter>
@@ -288,6 +288,8 @@ export default function AppRouter() {
                 products={products}
                 user={user}
                 setUser={setUser}
+                orders={orders}
+                setOrders={setOrders}
               />
               <Footer user={user} setUser={setUser} />
             </>
@@ -306,7 +308,6 @@ export default function AppRouter() {
               products={products}
               orders={orders}
               setOrders={setOrders}
-              addOrder={addOrder}
             />
           }
         />

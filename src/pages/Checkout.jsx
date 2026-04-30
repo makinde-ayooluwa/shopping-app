@@ -97,7 +97,7 @@ export default function Checkout({
       cart.forEach(item => removeFromCart(item.id));
 
       // Store order data and show receipt
-      setOrders([...orders, order]);
+      setOrders(prev => [...prev, order]);
       setShowReceipt(true);
       setLoading(false);
 
@@ -327,7 +327,7 @@ For any questions, contact: admin@shopnow.com
       cart.forEach(item => removeFromCart(item.id));
 
       // Store order data and show receipt
-      setorders(order);
+      setOrders(order);
       setShowReceipt(true);
       setLoading(false);
 
@@ -340,13 +340,13 @@ For any questions, contact: admin@shopnow.com
   };
 
   // Show receipt modal if order was placed
-  if (showReceipt && orders) {
+  if (showReceipt && orders.length > 0) {
     return (
       <div className="checkout-page">
         <Header user={user} />
         <CartToast cartToast={cartToast} />
         <ReceiptModal
-          order={orders}
+          order={orders[orders.length - 1]}
           onClose={() => setShowReceipt(false)}
           onSendToAdmin={sendReceiptToAdmin}
           onDownload={downloadReceipt}

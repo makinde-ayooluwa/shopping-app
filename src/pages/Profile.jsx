@@ -37,6 +37,8 @@ export default function Profile({
   products,
   user,
   setUser,
+  orders,
+  setOrders
 }) {
   const [activeTab, setActiveTab] = useState("cart");
   // const [user, setUser] = useState({
@@ -65,17 +67,6 @@ export default function Profile({
     }
   };
 
-  // Simulate orders from cart/products
-  const orders = [
-    {
-      id: 1,
-      date: "2024-01-15",
-      status: "Delivered",
-      total: 249.99,
-      items: cart.slice(0, 2).map((item) => ({ ...item, quantity: 1 })),
-      tracking: "#ORD-001-ABC",
-    },
-  ];
 
   // Wishlist products
   const wishlistProducts = products.filter((p) => inWish(p.id));
@@ -268,7 +259,7 @@ export default function Profile({
                           </div>
                           <div className="order-footer">
                             <span className="order-total">
-                              Total: ${order.total.toFixed(2)}
+                              Total: ${order.total}
                             </span>
                             {order.status === "Pending" && (
                               <button className="track-btn">Track Order</button>

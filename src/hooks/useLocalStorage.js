@@ -52,6 +52,6 @@ const ordersLocalStorage = function () {
     setOrdersState((prev) => [...prev, newOrder]);
   };
 
-  return [orders, setOrders, addOrder];
+  return [orders, setOrders];
 };
 export { userLocalStorage, ordersLocalStorage };
